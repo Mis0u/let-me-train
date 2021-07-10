@@ -1,0 +1,82 @@
+.PHONY		: help
+
+.DEFAULT_GOAL	= help
+
+
+EXEC_SF		= symfony
+COMPOSER	= composer
+
+SYMFONY		= $(EXEC_SF) console
+
+## —— Composer 🎶 ———————————————————————————————————————————————————————————————
+
+install:	## Composer install
+	$(COMPOSER) install
+
+upgrade:	## Composer upgrade
+	$(COMPOSER) upgrade
+
+update: ## Composer update
+	$(COMPOSER) update
+
+## —— Symfony 👓 ———————————————————————————————————————————————————————————————
+
+maker: ## Appelle la méthode make
+	@read -p "command [options] [arguments]:" command ; \
+	$(SYMFONY) make:$$command
+
+sf-console: ## Appelle la méthode make
+	@read -p "command [options] [arguments]:" command ; \
+	$(SYMFONY) $$command
+
+server: ## Lance le serveur en daemon
+	$(EXEC_SF) server start -d
+
+open: ## Ouvre le navigateur et lance la page
+	$(EXEC_SF) open:local
+## —— DataBase 🔑 ———————————————————————————————————————————————————————————————
+
+db:	db-drop	db-create db-migrate
+
+db-create:	## Créé la base de donnée si elle n'existe pas
+	$(SYMFONY) doctrine:database:create --if-no-exists
+
+db-drop:	## Supprime la base de donnée si elle existe
+	$(SYMFONY) doctrine:database:drop --if-exists --force
+
+db-migrate:	## Joue les migrations
+	$(SYMFONY) doctrine:migrations:migrate -n
+
+fixtures:	## Joue les fixtures sans interruption
+	$(SYMFONY) doctrine:fixtures:load -n
+
+
+## —— Maintenance 🤖 ———————————————————————————————————————————————————————————————
+
+phpcs: ## Examine la syntaxe des fichiers php
+	phpcs "./src"
+
+phpcs-fixer: ## Corrige la syntaxe des fichiers php
+	phpcbf "./src"
+
+phpstan:	## Lance phpstan
+	"./vendor/bin/phpstan" analyse
+
+twigcs:		## Lance Twigsc dans le dossier templates
+	twigcs templates
+
+units:		## Lance les tests unitaires/fonctionnels
+	"./vendor/bin/phpunit" --testdox
+
+units-opt:		## Lance les tests unitaires/fonctionnels avec options
+	@read -p "command [options]:" command ; \
+	"./vendor/bin/phpunit" $$command
+
+tests-no-units:	phpcs phpstan twigcs	## Lance les tests sans phpunit
+
+tests:	phpcs phpstan twigcs units	## Joue phpcs, phpstan et phpunit
+
+## —— DataBase ❓ ———————————————————————————————————————————————————————————————
+
+help: ## Affiche les fonctionnalités de Make
+	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'

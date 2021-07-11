@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -77,6 +79,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="boolean")
      */
     private bool $isBlockedByAdmin;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Muscle::class, mappedBy="muscleOwner")
+     */
+    private Collection $muscle;
+
+    public function __construct()
+    {
+        $this->muscle = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -262,6 +274,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsBlockedByAdmin(bool $isBlockedByAdmin): self
     {
         $this->isBlockedByAdmin = $isBlockedByAdmin;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Muscle[]
+     */
+    public function getMuscle(): Collection
+    {
+        return $this->muscle;
+    }
+
+    public function addMuscle(Muscle $muscle): self
+    {
+        if (!$this->muscle->contains($muscle)) {
+            $this->muscle[] = $muscle;
+            $muscle->setMuscleOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMuscle(Muscle $muscle): self
+    {
+        if ($this->muscle->removeElement($muscle)) {
+            // set the owning side to null (unless already changed)
+            if ($muscle->getMuscleOwner() === $this) {
+                $muscle->setMuscleOwner(null);
+            }
+        }
 
         return $this;
     }

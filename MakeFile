@@ -2,11 +2,42 @@
 
 .DEFAULT_GOAL	= help
 
-
 EXEC_SF		= symfony
 COMPOSER	= composer
 
 SYMFONY		= $(EXEC_SF) console
+
+ifneq (,$(findstring xterm,${TERM}))
+	BLACK        := $(shell tput -Txterm setaf 0)
+	RED          := $(shell tput -Txterm setaf 1)
+	GREEN        := $(shell tput -Txterm setaf 2)
+	YELLOW       := $(shell tput -Txterm setaf 3)
+	LIGHTPURPLE  := $(shell tput -Txterm setaf 4)
+	PURPLE       := $(shell tput -Txterm setaf 5)
+	BLUE         := $(shell tput -Txterm setaf 6)
+	WHITE        := $(shell tput -Txterm setaf 7)
+	RESET := $(shell tput -Txterm sgr0)
+else
+	BLACK        := ""
+	RED          := ""
+	GREEN        := ""
+	YELLOW       := ""
+	LIGHTPURPLE  := ""
+	PURPLE       := ""
+	BLUE         := ""
+	WHITE        := ""
+	RESET        := ""
+endif
+
+colors: ## Affiche toutes les couleurs
+	@echo "${BLACK}BLACK${RESET}"
+	@echo "${RED}RED${RESET}"
+	@echo "${GREEN}GREEN${RESET}"
+	@echo "${YELLOW}YELLOW${RESET}"
+	@echo "${LIGHTPURPLE}LIGHTPURPLE${RESET}"
+	@echo "${PURPLE}PURPLE${RESET}"
+	@echo "${BLUE}BLUE${RESET}"
+	@echo "${WHITE}WHITE${RESET}"
 
 ## —— Composer 🎶 ———————————————————————————————————————————————————————————————
 
@@ -72,9 +103,11 @@ units-opt:		## Lance les tests unitaires/fonctionnels avec options
 	@read -p "command [options]:" command ; \
 	"./vendor/bin/phpunit" $$command
 
-tests-no-units:	phpcs phpstan twigcs	## Lance les tests sans phpunit
+tests:	phpcs phpstan twigcs units	## Joue phpcs, phpstan, twigcs et phpunit
+	@echo "$(GREEN)All tests are passed$(RESET)"
 
-tests:	phpcs phpstan twigcs units	## Joue phpcs, phpstan et phpunit
+tests-no-units:	phpcs phpstan twigcs	## Lance les tests sans phpunit
+	@echo "$(GREEN)All tests $(YELLOW)without units$(RESET) $(GREEN)are passed$(RESET)"
 
 ## —— DataBase ❓ ———————————————————————————————————————————————————————————————
 

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MuscleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -43,6 +44,16 @@ class Muscle
      * @ORM\JoinColumn(nullable=false)
      */
     private ?User $muscleOwner;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Exercice::class, mappedBy="muscle")
+     */
+    private Collection $exercices;
+
+    public function __construct()
+    {
+        $this->exercices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +116,36 @@ class Muscle
     public function setMuscleOwner(?User $muscleOwner): self
     {
         $this->muscleOwner = $muscleOwner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Exercice[]
+     */
+    public function getExercices(): Collection
+    {
+        return $this->exercices;
+    }
+
+    public function addExercice(Exercice $exercice): self
+    {
+        if (!$this->exercices->contains($exercice)) {
+            $this->exercices[] = $exercice;
+            $exercice->setMuscle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExercice(Exercice $exercice): self
+    {
+        if ($this->exercices->removeElement($exercice)) {
+            // set the owning side to null (unless already changed)
+            if ($exercice->getMuscle() === $this) {
+                $exercice->setMuscle(null);
+            }
+        }
 
         return $this;
     }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ExerciceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Exercice
      * @ORM\ManyToOne(targetEntity=Muscle::class, inversedBy="exercices")
      */
     private ?Muscle $muscle;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Repetition::class, mappedBy="exercice")
+     */
+    private Collection $repetitions;
+
+    public function __construct()
+    {
+        $this->repetitions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +98,36 @@ class Exercice
     public function setMuscle(?Muscle $muscle): self
     {
         $this->muscle = $muscle;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Repetition[]
+     */
+    public function getRepetitions(): Collection
+    {
+        return $this->repetitions;
+    }
+
+    public function addRepetition(Repetition $repetition): self
+    {
+        if (!$this->repetitions->contains($repetition)) {
+            $this->repetitions[] = $repetition;
+            $repetition->setExercice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRepetition(Repetition $repetition): self
+    {
+        if ($this->repetitions->removeElement($repetition)) {
+            // set the owning side to null (unless already changed)
+            if ($repetition->getExercice() === $this) {
+                $repetition->setExercice(null);
+            }
+        }
 
         return $this;
     }

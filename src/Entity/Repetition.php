@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\RepetitionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
 
 /**
  * @ORM\Entity(repositoryClass=RepetitionRepository::class)
@@ -12,10 +13,11 @@ class Repetition
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="ulid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UlidGenerator::class)
      */
-    private int $id;
+    private string $id;
 
     /**
      * @ORM\Column(type="integer")
@@ -37,7 +39,7 @@ class Repetition
      */
     private ?Exercice $exercice;
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }

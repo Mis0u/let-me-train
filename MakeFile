@@ -61,7 +61,7 @@ sf-console: ## Appelle la méthode make
 	$(SYMFONY) $$command
 
 server: ## Lance le serveur en daemon
-	$(EXEC_SF) server start -d
+	$(EXEC_SF) server:start -d
 
 open: ## Ouvre le navigateur et lance la page
 	$(EXEC_SF) open:local

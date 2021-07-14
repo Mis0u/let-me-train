@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -24,7 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class=UlidGenerator::class)
      */
-    private string $id;
+    private ulid $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
@@ -93,7 +94,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->muscle = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?Ulid
     {
         return $this->id;
     }

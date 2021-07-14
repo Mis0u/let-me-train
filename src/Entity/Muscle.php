@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass=MuscleRepository::class)
@@ -19,7 +20,7 @@ class Muscle
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class=UlidGenerator::class)
      */
-    private string $id;
+    private ulid $id;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -57,7 +58,7 @@ class Muscle
         $this->exercices = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?ulid
     {
         return $this->id;
     }

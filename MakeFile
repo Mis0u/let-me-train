@@ -81,6 +81,15 @@ db-migrate:	## Joue les migrations
 fixtures:	## Joue les fixtures sans interruption
 	$(SYMFONY) doctrine:fixtures:load -n
 
+fixtures-dev:	## Joue les fixtures en mode dev sans interruption
+	$(SYMFONY) doctrine:fixtures:load -n --env="test"
+
+db-tests:	## Créé la base de donnée pour les tests
+	$(SYMFONY) doctrine:database:drop --if-exists --env="test" --force
+	$(SYMFONY) doctrine:database:create --if-not-exists --env="test" ; \
+	$(SYMFONY) doctrine:schema:create --env="test" ; \
+	$(MAKE) fixtures-dev
+
 
 ## —— Maintenance 🤖 ———————————————————————————————————————————————————————————————
 
@@ -98,6 +107,9 @@ twigcs:		## Lance Twigsc dans le dossier templates
 
 units:		## Lance les tests unitaires/fonctionnels
 	"./vendor/bin/phpunit" --testdox
+
+units-no-testdox:		## Lance les tests unitaires/fonctionnels sans le flag testdox
+	"./vendor/bin/phpunit" --colors=always
 
 units-opt:		## Lance les tests unitaires/fonctionnels avec options
 	@read -p "command [options]:" command ; \

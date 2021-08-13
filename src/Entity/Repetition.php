@@ -1,24 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use App\Helper\IdTrait;
 use App\Repository\RepetitionRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
-use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass=RepetitionRepository::class)
  */
 class Repetition
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="ulid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UlidGenerator::class)
-     */
-    private ulid $id;
+    use IdTrait;
 
     /**
      * @ORM\Column(type="integer")
@@ -39,11 +34,6 @@ class Repetition
      * @ORM\ManyToOne(targetEntity=Exercice::class, inversedBy="repetitions")
      */
     private ?Exercice $exercice;
-
-    public function getId(): ?ulid
-    {
-        return $this->id;
-    }
 
     public function getNumber(): ?int
     {

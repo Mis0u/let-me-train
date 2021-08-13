@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Helper\IdTrait;
+use App\Helper\CreatedAtTrait;
 use App\Repository\UserRepository;
+use Cocur\Slugify\Slugify;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
-use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity("email", message="user.unique.email")
+ * @UniqueEntity("alias", message="user.unique.alias")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="ulid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UlidGenerator::class)
-     */
-    private ulid $id;
+    use CreatedAtTrait;
+    use IdTrait;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank( message = "user.email.not_blank")
+     * @Assert\Email(message = "user.email.format")
      */
     private string $email;
 
@@ -45,11 +48,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $password;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private \DateTimeImmutable $createdAt;
-
-    /**
      * @ORM\Column(type="string", length=10)
      */
     private string $gender;
@@ -61,6 +59,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank( message = "user.alias.not_blank")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 20,
+     *      minMessage = "user.alias.min_length",
+     *      maxMessage = "user.alias.max_length"
+     * )
      */
     private string $alias;
 
@@ -85,18 +90,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isBlockedByAdmin;
 
     /**
-     * @ORM\OneToMany(targetEntity=Muscle::class, mappedBy="muscleOwner")
+     * @ORM\OneToMany(targetEntity=Muscle::class, mappedBy="muscleOwner", cascade={"persist","remove"})
      */
     private Collection $muscle;
 
     public function __construct()
     {
         $this->muscle = new ArrayCollection();
-    }
-
-    public function getId(): ?Ulid
-    {
-        return $this->id;
     }
 
     public function getEmail(): ?string
@@ -186,18 +186,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getGender(): ?string
     {
         return $this->gender;
@@ -210,7 +198,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -222,7 +210,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAlias(): ?string
+    public function getAlias(): string
     {
         return $this->alias;
     }
@@ -310,5 +298,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setIsBlockedByAttemptValue(): bool
+    {
+        return $this->isBlockedByAttempt = false;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setIsBlockedByAdminValue(): bool
+    {
+        return $this->isBlockedByAdmin = false;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setSlugValue(): void
+    {
+        $slugger = new Slugify();
+        $this->slug = $slugger->slugify($this->getAlias());
     }
 }

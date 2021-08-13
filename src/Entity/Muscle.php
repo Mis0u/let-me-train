@@ -1,26 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use App\Helper\IdTrait;
+use App\Helper\CreatedAtTrait;
 use App\Repository\MuscleRepository;
+use Cocur\Slugify\Slugify;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
-use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass=MuscleRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Muscle
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="ulid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UlidGenerator::class)
-     */
-    private ulid $id;
+    use IdTrait;
+    use CreatedAtTrait;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -38,11 +37,6 @@ class Muscle
     private string $slug;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private \DateTimeImmutable $createdAt;
-
-    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="muscle")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -56,11 +50,6 @@ class Muscle
     public function __construct()
     {
         $this->exercices = new ArrayCollection();
-    }
-
-    public function getId(): ?ulid
-    {
-        return $this->id;
     }
 
     public function getTarget(): ?string
@@ -87,7 +76,7 @@ class Muscle
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -95,18 +84,6 @@ class Muscle
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -151,5 +128,15 @@ class Muscle
         }
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setSlugValue(): string
+    {
+        $slugger = new Slugify();
+        return $this->slug = $slugger->slugify((string) $this->getTarget());
     }
 }

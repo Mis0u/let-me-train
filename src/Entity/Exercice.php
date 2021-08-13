@@ -1,26 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use App\Helper\IdTrait;
+use App\Helper\CreatedAtTrait;
 use App\Repository\ExerciceRepository;
+use Cocur\Slugify\Slugify;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UlidGenerator;
-use Symfony\Component\Uid\Ulid;
 
 /**
  * @ORM\Entity(repositoryClass=ExerciceRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Exercice
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="ulid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UlidGenerator::class)
-     */
-    private ulid $id;
+    use IdTrait;
+    use CreatedAtTrait;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -31,11 +30,6 @@ class Exercice
      * @ORM\Column(type="string", length=100)
      */
     private string $name;
-
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private \DateTimeImmutable $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=Muscle::class, inversedBy="exercices")
@@ -52,12 +46,7 @@ class Exercice
         $this->repetitions = new ArrayCollection();
     }
 
-    public function getId(): ?ulid
-    {
-        return $this->id;
-    }
-
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -77,18 +66,6 @@ class Exercice
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -133,5 +110,15 @@ class Exercice
         }
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setSlugValue(): string
+    {
+        $slugger = new Slugify();
+        return $this->slug = $slugger->slugify((string) $this->getName());
     }
 }

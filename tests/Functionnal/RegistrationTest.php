@@ -75,9 +75,9 @@ class RegistrationTest extends WebTestCase
         $client->request(Request::METHOD_GET, 'inscription');
 
         $crawler = $client->submitForm('S\'enregistrer', [
-            'registration[email]' => self::USER_EMAIL,
-            'registration[alias]' => self::ALIAS,
-            'registration[plainPassword][password]' => self::PASSWORD,
+            'registration[email]'                           => self::USER_EMAIL,
+            'registration[alias]'                           => self::ALIAS,
+            'registration[plainPassword][password]'         => self::PASSWORD,
             'registration[plainPassword][confirm_password]' => self::PASSWORD,
         ]);
 

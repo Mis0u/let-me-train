@@ -24,5 +24,6 @@ class AccessUrlTest extends WebTestCase
     public function provideUrlAccessibleForAnonymousUser(): \Generator
     {
         yield['/inscription'];
+        yield['/'];
     }
 }

@@ -22,6 +22,14 @@
                 <source>user.registration.welcome</source>
                 <target>Bienvenue chez toi, tu peux commencer à enregistrer ta séance</target>
             </trans-unit>
+            <trans-unit id="security.user.email">
+                <source>security.user.email</source>
+                <target>Cet email n'existe pas</target>
+            </trans-unit>
+            <trans-unit id="security.user.password">
+                <source>security.user.password</source>
+                <target>Le mot de passe est incorrect</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

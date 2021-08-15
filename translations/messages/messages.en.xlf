@@ -22,6 +22,14 @@
                 <source>user.registration.welcome</source>
                 <target>Welcome to your place, you can now register your progress</target>
             </trans-unit>
+            <trans-unit id="security.user.email">
+                <source>security.user.email</source>
+                <target>This email doesn't exist</target>
+            </trans-unit>
+            <trans-unit id="security.user.password">
+                <source>security.user.password</source>
+                <target>The password is incorrect</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

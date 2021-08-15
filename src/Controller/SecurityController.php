@@ -24,13 +24,17 @@ class SecurityController extends AbstractController
     public const LOCALISATION = 'http://ip-api.com/json';
 
     /**
-     * @Route("/connexion", name="app_login")
+     * @Route("/", name="app_login")
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(
+        AuthenticationUtils $authenticationUtils,
+        UserRepository $userRepo,
+        RedirectUserConnectedService $redirectUserConnected
+    ): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
+        if ($this->getUser() && $this->getUser() instanceof User) {
+            return $redirectUserConnected->redirectToProfile($userRepo, $this->getUser());
+        }
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ app.user.alias }}{% endblock %}
+{% block title %}{{ app.user.alias|capitalize }}{% endblock %}
 
 {% block body %}
 <h1>Bienvenue {{ app.user.alias }}</h1>

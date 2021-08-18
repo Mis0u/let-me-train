@@ -7,6 +7,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class LocalisationService
 {
     private HttpClientInterface $httpClient;
+    public const LOCALISATION = 'http://ip-api.com/json';
 
     public function __construct(HttpClientInterface $httpClient)
     {
@@ -14,12 +15,11 @@ class LocalisationService
     }
 
     /**
-     * @param string $url
      * @return array <string>
      */
-    public function getApi(string $url): array
+    public function getApi(): array
     {
-        $response = $this->httpClient->request('GET', $url);
+        $response = $this->httpClient->request('GET', self::LOCALISATION);
 
         return $response->toArray();
     }

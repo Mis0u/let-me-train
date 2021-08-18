@@ -94,6 +94,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private Collection $muscle;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private int $loginAttempt;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $emailBlockSend;
+
     public function __construct()
     {
         $this->muscle = new ArrayCollection();
@@ -270,6 +280,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getLoginAttempt(): ?int
+    {
+        return $this->loginAttempt;
+    }
+
+    public function setLoginAttempt(int $loginAttempt): self
+    {
+        $this->loginAttempt = $loginAttempt;
+
+        return $this;
+    }
+
+    public function getEmailBlockSend(): ?bool
+    {
+        return $this->emailBlockSend;
+    }
+
+    public function setEmailBlockSend(bool $emailBlockSend): self
+    {
+        $this->emailBlockSend = $emailBlockSend;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Muscle[]
      */
@@ -320,9 +354,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function setSlugValue(): void
+    public function setSlugValue(): string
     {
         $slugger = new Slugify();
         $this->slug = $slugger->slugify($this->getAlias());
+        return $this->slug;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setLoginAttemptValue(): int
+    {
+        return $this->loginAttempt = 0;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setEmailBlockSendValue(): bool
+    {
+        return $this->emailBlockSend = false;
     }
 }

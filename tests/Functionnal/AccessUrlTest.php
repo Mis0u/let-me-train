@@ -4,7 +4,6 @@ namespace App\Tests\Functionnal;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class AccessUrlTest extends WebTestCase
 {
@@ -24,5 +23,6 @@ class AccessUrlTest extends WebTestCase
     public function provideUrlAccessibleForAnonymousUser(): \Generator
     {
         yield['/inscription'];
+        yield['/'];
     }
 }

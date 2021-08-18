@@ -24,11 +24,43 @@
             </trans-unit>
             <trans-unit id="security.user.email">
                 <source>security.user.email</source>
-                <target>Cet email n'existe pas</target>
+                <target>Les identifiants sont incorrects</target>
             </trans-unit>
             <trans-unit id="security.user.password">
                 <source>security.user.password</source>
                 <target>Le mot de passe est incorrect</target>
+            </trans-unit>
+            <trans-unit id="security.user.block_attempt">
+                <source>security.user.block_attempt</source>
+                <target>Ton compte est bloqué, un email t'a été envoyé</target>
+            </trans-unit>
+            <trans-unit id="ip_block.title">
+                <source>ip_block.title</source>
+                <target>Accès suspendu</target>
+            </trans-unit>
+            <trans-unit id="user.connexion.title">
+                <source>user.connexion.title</source>
+                <target>Connecte toi</target>
+            </trans-unit>
+            <trans-unit id="connect.title">
+                <source>connect.title</source>
+                <target>Connection</target>
+            </trans-unit>
+            <trans-unit id="email.label">
+                <source>email.label</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="password.label">
+                <source>password.label</source>
+                <target>Mot de passe</target>
+            </trans-unit>
+            <trans-unit id="email.welcome.subject">
+                <source>email.welcome.subject</source>
+                <target>Bienvenue sur Let me train</target>
+            </trans-unit>
+            <trans-unit id="email.account_block.subject">
+                <source>email.account_block.subject</source>
+                <target>Ton compte est bloqué</target>
             </trans-unit>
         </body>
     </file>

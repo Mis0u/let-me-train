@@ -21,6 +21,12 @@ security:
             provider: app_user_provider
             custom_authenticator: App\Security\LoginFormAuthenticator
             user_checker: App\Security\UserChecker
+            login_link:
+                check_route: login_check
+                lifetime: '%env(int:LOGIN_LINK_VALIDITY)%'
+                signature_properties: [id, email]
+                success_handler: App\Security\Authentication\AuthenticationSuccessHandler
+                failure_handler: App\Security\Authentication\AuthenticationFailureHandler
             logout:
                 path: app_logout
                 # where to redirect after logout

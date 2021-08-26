@@ -37,7 +37,8 @@ class LoginTest extends \Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 
         $this->assertResponseRedirects('/',
             Response::HTTP_FOUND,
-            'Le form contenait un champ invalid est n\'a pas renvoyé vers la page login');
+            'Le form contenait un champ invalid est n\'a pas renvoyé vers la page login'
+        );
 
         $client->followRedirect();
 
@@ -95,12 +96,6 @@ class LoginTest extends \Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 
         $this->assertPageTitleContains('User2', 'L\'onglet ne contient pas le texte attendu');
     }
-
-    public function it_is_block_after_three_attempt_for_unknown_user()
-    {
-
-    }
-
 
     public function provideFields()
     {

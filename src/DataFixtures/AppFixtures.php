@@ -61,6 +61,7 @@ class AppFixtures extends Fixture
             $user->setAlias("user$i")
                 ->setEmail("user$i@gmail.com")
                 ->setGender($gender === 1 ? 'male' : 'female')
+                ->setCountry('France')
                 ->setPassword($this->encoder->hashPassword($user, 'Pass_1234'));
 
             $manager->persist($user);
@@ -70,6 +71,7 @@ class AppFixtures extends Fixture
         $admin->setAlias('Admin')
             ->setEmail('admin@gmail.com')
             ->setGender('male')
+            ->setCountry('France')
             ->setRoles(['ROLE_ADMIN'])
             ->setPassword($this->encoder->hashPassword($admin, 'Pass_1234'));
 

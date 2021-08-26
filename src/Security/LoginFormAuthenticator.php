@@ -77,6 +77,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
             if (null !== $user) {
                 $user->setLoginAttempt(0);
+                $user->setLastConnection(
+                    new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'))
+                );
 
                 $this->manager->persist($user);
                 $this->manager->flush();

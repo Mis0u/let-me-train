@@ -1,0 +1,6 @@
+{% extends 'security/base.html.twig' %}
+
+{% block body %}
+    <h1>{% trans %}user.login_link.send{% endtrans %} {{ user_email }}</h1>
+    <a href="{{ path('app_password_forgotten') }}">{% trans %}back.button{% endtrans %}</a>
+{% endblock %}

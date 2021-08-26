@@ -1,0 +1,19 @@
+{% extends 'security/base.html.twig' %}
+
+{% block title %}{% trans %}password_forgotten.title{% endtrans %}{% endblock %}
+{% block stylesheets %}
+{% endblock %}
+{% block bodyClass %}login-index{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form action="{{ path('app_password_forgotten') }}" method="POST">
+        <input type="email" name="email">
+        <button type="submit">{% trans %}user.button.password_forgotten{% endtrans %}</button>
+    </form>
+{% endblock %}

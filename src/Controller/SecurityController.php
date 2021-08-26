@@ -9,6 +9,7 @@ use App\Helper\Service\EmailService;
 use App\Helper\Service\IpBlockedService;
 use App\Helper\Service\LocalisationService;
 use App\Helper\Service\RedirectUserConnectedService;
+use App\Notifier\CustomLoginLinkNotification;
 use App\Repository\LoginAttemptRepository;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
@@ -18,10 +19,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Recipient\Recipient;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
@@ -78,21 +82,11 @@ class SecurityController extends AbstractController
                 $manager->persist($user[0]);
                 $manager->flush();
 
-                if ($user[0]->getLoginAttempt() === self::ATTEMPT_LOGIN) {
+                if ($user[0]->getLoginAttempt() >= self::ATTEMPT_LOGIN) {
                     $user[0]->setIsBlockedByAttempt(true);
-                    $user[0]->setEmailBlockSend(true);
 
                     $manager->persist($user[0]);
                     $manager->flush();
-
-                    //TODO envoyer en asynchrone
-                    $emailService->send(
-                        $mailer,
-                        (string)$user[0]->getEmail(),
-                        $translator->trans('email.account_block.subject', [], 'messages'),
-                        self::TEMPLATE_EMAIL,
-                        ['pseudo' => $user[0]->getAlias()]
-                    );
                 }
             }
         }
@@ -190,6 +184,70 @@ class SecurityController extends AbstractController
 
 
         return $this->render('security/ipBlock.html.twig');
+    }
+
+    /**
+     * @Route("/login_check", name="login_check")
+     */
+    public function check(): void
+    {
+        throw new \LogicException('This code should never be reached');
+    }
+
+    /**
+    * @Route("/mot-de-passe-oublie", name="app_password_forgotten")
+    */
+    public function passwordForgotten(
+        NotifierInterface $notifier,
+        LoginLinkHandlerInterface $loginLinkHandler,
+        UserRepository $userRepository,
+        Request $request,
+        TranslatorInterface $translator,
+        LoginAttemptRepository $loginAttemptRepository,
+        IpBlockedService $ipBlockedService,
+        EntityManagerInterface $manager,
+        RedirectUserConnectedService $redirectUserConnected
+    ): Response {
+        if ($this->getUser() && $this->getUser() instanceof User) {
+            return $redirectUserConnected->redirectToProfile($userRepository, $this->getUser());
+        }
+        if ($loginAttemptRepository->countRecentLoginAttempts((string)$request->getClientIp()) >= self::ATTEMPT_LOGIN) {
+            return $ipBlockedService->redirect();
+        }
+        if ($request->isMethod('POST')) {
+            $email = $request->request->get('email');
+            $user = $userRepository->findOneBy(['email' => $email]);
+
+            if ($user === null) {
+                $this->addFlash('danger', $translator->trans('user.email_unknown.password_forgotten'));
+                return $this->redirectToRoute('app_password_forgotten');
+            }
+
+            $loginLinkDetails = $loginLinkHandler->createLoginLink($user);
+
+            // create a notification based on the login link details
+            $notification = new CustomLoginLinkNotification(
+                $loginLinkDetails,
+                $translator,
+                $translator->trans('user.email_subject.password_forgotten') // email subject
+            );
+            // create a recipient for this user
+            $recipient = new Recipient((string) $user->getEmail());
+
+            // send the notification to the user
+            $notifier->send($notification, $recipient);
+            $user->setIsBlockedByAttempt(false);
+
+            $manager->persist($user);
+            $manager->flush();
+
+            // render a "Login link is sent!" page
+            return $this->render('security/login_link_sent.html.twig', [
+                'user_email' => $user->getEmail()
+            ]);
+        }
+
+        return $this->render('security/login_link_form.html.twig');
     }
 
     /**

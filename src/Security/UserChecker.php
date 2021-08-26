@@ -18,7 +18,7 @@ class UserChecker implements \Symfony\Component\Security\Core\User\UserCheckerIn
             return;
         }
 
-        if ($user->getLoginAttempt() === 5) {
+        if ($user->getIsBlockedByAttempt()) {
             throw new CustomUserMessageAccountStatusException('Your user account is blocked.');
         }
     }

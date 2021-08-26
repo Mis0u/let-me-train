@@ -10,6 +10,10 @@
                 <source>register.button</source>
                 <target>Register</target>
             </trans-unit>
+            <trans-unit id="back.button">
+                <source>back.button</source>
+                <target>Back</target>
+            </trans-unit>
             <trans-unit id="gender.sexe_male">
                 <source>gender.sexe_male</source>
                 <target>Man</target>
@@ -17,6 +21,10 @@
             <trans-unit id="gender.sexe_female">
                 <source>gender.sexe_female</source>
                 <target>Female</target>
+            </trans-unit>
+            <trans-unit id="password_forgotten.title">
+                <source>password_forgotten.title</source>
+                <target>Password forgotten</target>
             </trans-unit>
             <trans-unit id="user.registration.welcome">
                 <source>user.registration.welcome</source>
@@ -32,7 +40,10 @@
             </trans-unit>
             <trans-unit id="security.user.block_attempt">
                 <source>security.user.block_attempt</source>
-                <target>Your account is blocked, an email has been send to you</target>
+                <target>Your account is locked, to unlock it and be able to connect, click on password forgotten,
+                        write your email, click on the button and click on the link in you just received in your email
+                        address, see you ;)
+                </target>
             </trans-unit>
             <trans-unit id="ip_block.title">
                 <source>ip_block.title</source>
@@ -60,7 +71,35 @@
             </trans-unit>
             <trans-unit id="email.account_block.subject">
                 <source>email.account_block.subject</source>
-                <target>Your account is blocked</target>
+                <target>Your account is locked</target>
+            </trans-unit>
+            <trans-unit id="user.email_unknown.password_forgotten">
+                <source>user.email_unknown.password_forgotten</source>
+                <target>There is a problem with this email, check again</target>
+            </trans-unit>
+            <trans-unit id="user.link_expired.password_forgotten">
+                <source>user.link_expired.password_forgotten</source>
+                <target>This link is not valid anymore</target>
+            </trans-unit>
+            <trans-unit id="user.email_subject.password_forgotten">
+                <source>user.email_subject.password_forgotten</source>
+                <target>Connect yourself to Let me train</target>
+            </trans-unit>
+            <trans-unit id="user.button.password_forgotten">
+                <source>user.button.password_forgotten</source>
+                <target>Send the link</target>
+            </trans-unit>
+            <trans-unit id="user.login_link.send">
+                <source>user.login_link.send</source>
+                <target>The link has been send to your email address =></target>
+            </trans-unit>
+            <trans-unit id="hour.login_link.email">
+                <source>hour.login_link.email</source>
+                <target>Hour</target>
+            </trans-unit>
+            <trans-unit id="content.login_link.email">
+                <source>content.login_link.email</source>
+                <target>Click on this link to connect, it is valid during </target>
             </trans-unit>
         </body>
     </file>
